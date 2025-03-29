@@ -4,19 +4,66 @@
     <title>Dashboard</title>
 </head>
 <body>
+     <!-- Navbar -->
+     <div class="navbar">
+        <a href="{% url 'PO_Items:PO_Items' %}">Home</a>
+        <div class="right">
+            <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
+            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
+            </form>
+        </div>
+    </div>
     <h2>Dashboard</h2>
 
-    <!-- Example form -->
-    <form method="post" action="">
-        {% csrf_token %}
-        <input type="text" name="example_field" placeholder="Example">
-        <button type="submit">Submit</button>
-    </form>
+    <!-- Display the list of purchase orders -->
+    <h3> Purchase Orders</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th>Created By</th>
+                <th>Items</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.order_number }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.created_date }}</td>
+                    <td>{{ order.created_by }}</td>
+                    <td>
+                        <ul>
+                            {% for item in order.items.all %}
+                                <li>{{ item.sports_item.name }} (x{{ item.quantity }}) (${{ item.price }})</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                  
+                        <!-- Calculate the total price for the order -->
+                        <td>${{ order.total_price }}</td>
+                   
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No purchase orders found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     <!-- Logout form -->
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit">Logout</button>
     </form>
+
+    <!-- Button to create a purchase order -->
+    <a href="{% url 'PO_Items:create_order' %}" class="button">Create Purchase Order</a>
 </body>
 </html>

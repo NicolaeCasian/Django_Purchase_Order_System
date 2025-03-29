@@ -5,5 +5,5 @@ app_name = "PO_Items"
 
 urlpatterns = [
     path('', views.dashboard, name='PO_Items' ),
-    # Add paths for creating, editing, and approving orders
+    path('create_order/', views.create_order, name='create_order'),
 ]

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Purchase Order</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="{% url 'PO_Items:PO_Items' %}">Home</a>
+        <div class="right">
+            <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
+            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
+            </form>
+        </div>
+    </div>
+    <h2>Create Purchase Order</h2>
+    <form method="post" action="">
+        {% csrf_token %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Item Name</th>
+                    <th>Supplier</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sports_items %}
+                <tr>
+                    <td><input type="checkbox" name="sports_item" value="{{ item.id }}"></td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.supplier }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.unit_price }}</td>
+                    <td><input type="number" name="quantity" min="1" value="1"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Create Purchase Order</button>
+    </form>
+</body>
+</html>
