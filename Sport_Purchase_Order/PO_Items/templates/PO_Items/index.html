@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h2>Dashboard</h2>
+
+    <!-- Example form -->
+    <form method="post" action="">
+        {% csrf_token %}
+        <input type="text" name="example_field" placeholder="Example">
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Logout form -->
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+</body>
+</html>
