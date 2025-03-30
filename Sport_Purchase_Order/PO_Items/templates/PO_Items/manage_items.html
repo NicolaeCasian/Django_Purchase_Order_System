@@ -1,7 +1,9 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Manage Items</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'PO_Items/styles.css' %}">
 </head>
 <body>
     <!-- Navbar -->
@@ -19,7 +21,7 @@
         {% endif %}
         <form method="post" action="{% url 'logout' %}" style="margin: 0;">
             {% csrf_token %}
-            <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
+            <button type="submit" >Logout</button>
         </form>
     </div>
 
@@ -43,6 +45,14 @@
                     <td>{{ item.description }}</td>
                     <td>${{ item.unit_price }}</td>
                     <td>{{ item.supplier.name }}</td>
+                    <td>
+                        {% if item.id %}
+                        <form method="post" action="{% url 'PO_Items:delete_sports_item' item.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: red; cursor: pointer;">Delete</button>
+                        </form>
+                        {% endif %}
+                    </td>
                 </tr>
             {% empty %}
                 <tr>

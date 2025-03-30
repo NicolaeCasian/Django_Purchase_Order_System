@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Purchase Order</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'PO_Items/styles.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'PO_Items:PO_Items' %}">Home</a>
+        <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
+    </div>
+
+    <h2>Edit Purchase Order: {{ order.order_number }}</h2>
+
+    <form method="post" action="">
+        {% csrf_token %}
+        <h3>Order Details</h3>
+        <!-- Display order details as plain text -->
+        <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+
+        <!-- Include hidden fields for order_number and status -->
+        {{ form.order_number.as_hidden }}
+        {{ form.status.as_hidden }}
+
+        <h3>Order Items</h3>
+        {{ formset.management_form }}
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                <tr>
+                    <td>
+                        {{ form.sports_item }}
+                        {{ form.id }} <!-- Hidden id field -->
+                    </td>
+                    <td>{{ form.quantity }}</td>
+                    <td>{{ form.price }}</td>
+                    <td>
+                        {% if form.instance.id %}
+                            <!-- Render the delete button for saved items -->
+                            <form method="post" action="{% url 'PO_Items:delete_item' form.instance.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+                                    Delete
+                                </button>
+                            </form>
+                        {% else %}
+                            <p style="color: gray;">Cannot delete unsaved item</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <a href="{% url 'PO_Items:PO_Items' %}">Cancel</a>
+</body>
+</html>

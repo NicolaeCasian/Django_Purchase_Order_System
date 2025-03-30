@@ -1,7 +1,9 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Manage Suppliers</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'PO_Items/styles.css' %}">
 </head>
 <body>
     <!-- Navbar -->
@@ -19,7 +21,7 @@
         {% endif %}
         <form method="post" action="{% url 'logout' %}" style="margin: 0;">
             {% csrf_token %}
-            <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
+            <button type="submit" >Logout</button>
         </form>
     </div>
 
@@ -39,6 +41,14 @@
                 <tr>
                     <td>{{ supplier.name }}</td>
                     <td>{{ supplier.contact_info }}</td>
+                    <td>
+                        {% if request.user.role == 'ADMIN' or request.user.role == 'INVENTORY_MANAGER' %}
+                            <form method="post" action="{% url 'PO_Items:delete_supplier' supplier.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="background: none; border: none; color: red; cursor: pointer;">Delete</button>
+                            </form>
+                        {% endif %}
+                    </td>
                 </tr>
             {% empty %}
                 <tr>

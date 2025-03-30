@@ -1,7 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Dashboard</title>
+  
+    <link rel="stylesheet" type="text/css" href="{% static 'PO_Items/styles.css' %}">
 </head>
 <body>
 <!-- Navbar -->
@@ -17,63 +20,81 @@
     {% if request.user.role == 'ADMIN' %}
         <a href="{% url 'PO_Items:manage_users' %}">Manage Users</a>
     {% endif %}
-    <form method="post" action="{% url 'logout' %}" style="margin: 0;">
-        {% csrf_token %}
-        <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
-    </form>
+    <!-- Logout Button -->
+ <form method="post" action="{% url 'logout' %}" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit ">Logout</button>
+</form>
+   
 </div>
-    <h2>Dashboard</h2>
 
-    <!-- Display the list of purchase orders -->
-    <h3> Purchase Orders</h3>
-    <table border="1">
-        <thead>
+<h2>Dashboard</h2>
+
+<!-- Filter Dropdown -->
+<form method="get" action="">
+    <label for="status">Filter by Status:</label>
+    <select name="status" id="status" onchange="this.form.submit()">
+        <option value="ALL" {% if status_filter == 'ALL' %}selected{% endif %}>All</option>
+        <option value="PENDING" {% if status_filter == 'PENDING' %}selected{% endif %}>Pending</option>
+        <option value="APPROVED" {% if status_filter == 'APPROVED' %}selected{% endif %}>Approved</option>
+        <option value="REJECTED" {% if status_filter == 'REJECTED' %}selected{% endif %}>Rejected</option>
+    </select>
+</form>
+
+<!-- Display the list of purchase orders -->
+<h3>Purchase Orders</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Order Number</th>
+            <th>Status</th>
+            <th>Created Date</th>
+            <th>Created By</th>
+            <th>Items</th>
+            <th>Total Price</th>
+            <th>Actions</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
             <tr>
-                <th>Order Number</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th>Created By</th>
-                <th>Items</th>
-                <th>Total Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-                <tr>
-                    <td>{{ order.order_number }}</td>
-                    <td>{{ order.status }}</td>
-                    <td>{{ order.created_date }}</td>
-                    <td>{{ order.created_by }}</td>
-                    <td>
-                        <ul>
-                            {% for item in order.items.all %}
-                                <li>{{ item.sports_item.name }} (x{{ item.quantity }}) (${{ item.price }})</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>
+                <td>{{ order.order_number }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.created_date }}</td>
+                <td>{{ order.created_by }}</td>
+                <td>
+                    <ul>
+                        {% for item in order.items.all %}
+                            <li>{{ item.sports_item.name }} (x{{ item.quantity }}) (${{ item.price }})</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>${{ order.total_price }}</td>
+                <td>
+                    {% if request.user.role == 'APPROVER' or request.user.role == 'ADMIN' %}
                         <a href="{% url 'PO_Items:change_status' order.id %}">Change Status</a>
-                    </td>
-                  
-                        <!-- Calculate the total price for the order -->
-                        <td>${{ order.total_price }}</td>
-                   
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6">No purchase orders found.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Logout form -->
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-
-    <!-- Button to create a purchase order -->
-    <a href="{% url 'PO_Items:create_order' %}" class="button">Create Purchase Order</a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'PO_Items:edit_order' order.id %}" style="color: blue; text-decoration: underline;">Edit</a>
+                </td>
+                <td>
+                    {% if request.user.role == 'ADMIN' %}
+                        <form method="post" action="{% url 'PO_Items:delete_order' order.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: red; cursor: pointer;">Delete</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7">No purchase orders found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 </body>
 </html>
