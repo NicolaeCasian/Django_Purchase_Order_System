@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change Status</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="{% url 'PO_Items:PO_Items' %}">Home</a>
+        {% if request.user.role == 'BUYER' or request.user.role == 'ADMIN' %}
+            <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
+        {% endif %}
+        {% if request.user.role == 'INVENTORY_MANAGER' or request.user.role == 'ADMIN' %}
+            <a href="{% url 'PO_Items:manage_items' %}">Manage Items</a>
+            <a href="{% url 'PO_Items:manage_suppliers' %}">Manage Suppliers</a>
+        {% endif %}
+        {% if request.user.role == 'ADMIN' %}
+            <a href="{% url 'PO_Items:manage_users' %}">Manage Users</a>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
+        </form>
+    </div>
+<h2>Change Status for Order {{ order.order_number }}</h2>
+
+<!-- Display the items associated with the order -->
+<h3>Items in this Order:</h3>
+<ul>
+    {% for item in items %}
+        <li>{{item.sports_item.supplier }}: {{ item.sports_item.name }} (x{{ item.quantity }}) (${{ item.price }})</li>
+    {% empty %}
+        <li>No items found for this order.</li>
+    {% endfor %}
+</ul>
+
+<!-- Form to change the status -->
+<form method="post" action="">
+    {% csrf_token %}
+    <label for="status">Select New Status:</label>
+    <select name="status" id="status">
+        {% for key, value in order.ORDER_STATUS_CHOICES %}
+            <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>
+                {{ value }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Update Status</button>
+</form>
+    </form>
+    <a href="{% url 'PO_Items:PO_Items' %}">Cancel</a>
+</body>
+</html>

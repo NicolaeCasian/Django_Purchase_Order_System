@@ -4,17 +4,24 @@
     <title>Dashboard</title>
 </head>
 <body>
-     <!-- Navbar -->
-     <div class="navbar">
-        <a href="{% url 'PO_Items:PO_Items' %}">Home</a>
-        <div class="right">
-            <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
-            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
-                {% csrf_token %}
-                <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
-            </form>
-        </div>
-    </div>
+<!-- Navbar -->
+<div class="navbar">
+    <a href="{% url 'PO_Items:PO_Items' %}">Home</a>
+    {% if request.user.role == 'BUYER' or request.user.role == 'ADMIN' %}
+        <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
+    {% endif %}
+    {% if request.user.role == 'INVENTORY_MANAGER' or request.user.role == 'ADMIN' %}
+        <a href="{% url 'PO_Items:manage_items' %}">Manage Items</a>
+        <a href="{% url 'PO_Items:manage_suppliers' %}">Manage Suppliers</a>
+    {% endif %}
+    {% if request.user.role == 'ADMIN' %}
+        <a href="{% url 'PO_Items:manage_users' %}">Manage Users</a>
+    {% endif %}
+    <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+        {% csrf_token %}
+        <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
+    </form>
+</div>
     <h2>Dashboard</h2>
 
     <!-- Display the list of purchase orders -->
@@ -43,6 +50,9 @@
                                 <li>{{ item.sports_item.name }} (x{{ item.quantity }}) (${{ item.price }})</li>
                             {% endfor %}
                         </ul>
+                    </td>
+                    <td>
+                        <a href="{% url 'PO_Items:change_status' order.id %}">Change Status</a>
                     </td>
                   
                         <!-- Calculate the total price for the order -->

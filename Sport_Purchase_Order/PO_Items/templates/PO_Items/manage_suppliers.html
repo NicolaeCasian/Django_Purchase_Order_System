@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Create Purchase Order</title>
+    <title>Manage Suppliers</title>
 </head>
 <body>
     <!-- Navbar -->
@@ -22,34 +22,43 @@
             <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Logout</button>
         </form>
     </div>
-    <h2>Create Purchase Order</h2>
+
+    <h2>Manage Suppliers</h2>
+
+    <!-- Display Existing Suppliers -->
+    <h3>Existing Suppliers</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Contact Info</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+                <tr>
+                    <td>{{ supplier.name }}</td>
+                    <td>{{ supplier.contact_info }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No suppliers found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Form to Add New Supplier -->
+    <h3>Add New Supplier</h3>
     <form method="post" action="">
         {% csrf_token %}
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Select</th>
-                    <th>Item Name</th>
-                    <th>Supplier</th>
-                    <th>Description</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in sports_items %}
-                <tr>
-                    <td><input type="checkbox" name="sports_item" value="{{ item.id }}"></td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.supplier }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.unit_price }}</td>
-                    <td><input type="number" name="quantity" min="1" value="1"></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit">Create Purchase Order</button>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="contact_info">Contact Info:</label>
+        <textarea id="contact_info" name="contact_info"></textarea><br>
+
+        <button type="submit">Add Supplier</button>
     </form>
 </body>
 </html>

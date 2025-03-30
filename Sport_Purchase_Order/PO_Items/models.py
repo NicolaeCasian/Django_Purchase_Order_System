@@ -8,8 +8,15 @@ class Role(models.Model):
     def __str__(self):
         return self.name
 
+
 class User(AbstractUser):
-    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
+    ROLE_CHOICES = [
+        ('ADMIN', 'Admin'),
+        ('BUYER', 'Buyer'),
+        ('APPROVER', 'Approver'),
+        ('INVENTORY_MANAGER', 'Inventory Manager'),
+    ]
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='BUYER')
 
     def __str__(self):
         return self.username
