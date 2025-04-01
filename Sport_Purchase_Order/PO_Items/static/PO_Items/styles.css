@@ -7,6 +7,11 @@ body {
     color: #333;
 }
 
+.form_nav {
+    background-color: #333;
+    border-color: #333;
+}
+
 /* Navbar Styles */
 .navbar {
     background-color: #333;
@@ -38,6 +43,7 @@ body {
     color: white;
     font-size: 16px;
     cursor: pointer;
+    outline: none;
 }
 
 .navbar button:hover {

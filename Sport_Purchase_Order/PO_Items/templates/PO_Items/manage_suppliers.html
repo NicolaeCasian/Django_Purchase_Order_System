@@ -19,7 +19,7 @@
         {% if request.user.role == 'ADMIN' %}
             <a href="{% url 'PO_Items:manage_users' %}">Manage Users</a>
         {% endif %}
-        <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+        <form class = "form_nav" method="post" action="{% url 'logout' %}" style="margin: 0;">
             {% csrf_token %}
             <button type="submit" >Logout</button>
         </form>
@@ -34,6 +34,7 @@
             <tr>
                 <th>Name</th>
                 <th>Contact Info</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>

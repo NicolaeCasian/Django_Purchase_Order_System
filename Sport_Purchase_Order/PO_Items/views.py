@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.crypto import get_random_string
 from django.http import Http404
 from django.forms import modelform_factory, modelformset_factory
+from django.forms import inlineformset_factory
 
 @login_required
 def dashboard(request):
@@ -204,40 +205,41 @@ def delete_user(request, user_id):
     user.delete()
     return redirect('PO_Items:manage_users') 
 
+
 @login_required
 @role_required(['ADMIN', 'BUYER'])
 def edit_order(request, order_id):
     order = get_object_or_404(PurchaseOrder, id=order_id)
 
-    # Create a form for the PurchaseOrder model
+    # Dynamically create a form for the PurchaseOrder model
     PurchaseOrderForm = modelform_factory(PurchaseOrder, fields=['order_number', 'status'])
 
-    # Create a formset for the POItem model
-    POItemFormSet = modelformset_factory(
-        POItem,
+    # Create an inline formset for POItem with extra=1 to allow adding a new item
+    POItemFormSet = inlineformset_factory(
+        PurchaseOrder,  # Parent model
+        POItem,         # Child model
         fields=['sports_item', 'quantity', 'price'],
-        extra=0,  # Only show saved items
+        extra=1,        # Allow one blank form for adding a new item
         can_delete=True
     )
 
     if request.method == 'POST':
         form = PurchaseOrderForm(request.POST, instance=order)
-        formset = POItemFormSet(request.POST, queryset=order.items.all().order_by('id'))
+        formset = POItemFormSet(request.POST, instance=order)
 
         if form.is_valid() and formset.is_valid():
             form.save()
-            po_items = formset.save(commit=False)
-            for item in po_items:
-                item.purchase_order = order  # Associate each item with the current order
-                item.save()
-            formset.save_m2m()
+            formset.save()  # Save the formset, including new, updated, and deleted items
             return redirect('PO_Items:edit_order', order_id=order.id)
         else:
-            print("Form or Formset is invalid")
             print("Form errors:", form.errors)
             print("Formset errors:", formset.errors)
     else:
         form = PurchaseOrderForm(instance=order)
-        formset = POItemFormSet(queryset=order.items.all().order_by('id'))
+        formset = POItemFormSet(instance=order)
 
-    return render(request, 'PO_Items/edit_order.html', {'form': form, 'formset': formset, 'order': order})
+    return render(request, 'PO_Items/edit_order.html', {
+        'form': form,
+        'formset': formset,
+        'order': order
+    })

@@ -4,11 +4,43 @@
 <head>
     <title>Edit Purchase Order</title>
     <link rel="stylesheet" type="text/css" href="{% static 'PO_Items/styles.css' %}">
+    <style>
+        /* Adjust these styles as needed */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .cancel-button {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            display: inline-block;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
         <a href="{% url 'PO_Items:PO_Items' %}">Home</a>
-        <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
+        {% if request.user.role == 'BUYER' or request.user.role == 'ADMIN' %}
+            <a href="{% url 'PO_Items:create_order' %}">Create Order</a>
+        {% endif %}
+        {% if request.user.role == 'INVENTORY_MANAGER' or request.user.role == 'ADMIN' %}
+            <a href="{% url 'PO_Items:manage_items' %}">Manage Items</a>
+            <a href="{% url 'PO_Items:manage_suppliers' %}">Manage Suppliers</a>
+        {% endif %}
+        {% if request.user.role == 'ADMIN' %}
+            <a href="{% url 'PO_Items:manage_users' %}">Manage Users</a>
+        {% endif %}
+        <!-- Logout Button -->
+        <form class="form_nav" method="post" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
     </div>
 
     <h2>Edit Purchase Order: {{ order.order_number }}</h2>
@@ -44,27 +76,19 @@
                     </td>
                     <td>{{ form.quantity }}</td>
                     <td>{{ form.price }}</td>
-                    <td>
-                        {% if form.instance.id %}
-                            <!-- Render the delete button for saved items -->
-                            <form method="post" action="{% url 'PO_Items:delete_item' form.instance.id %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
-                                    Delete
-                                </button>
-                            </form>
-                        {% else %}
-                            <p style="color: gray;">Cannot delete unsaved item</p>
-                        {% endif %}
+                    <td style="text-align: center;">
+                        <input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" style="width: 20px; height: 20px; cursor: pointer;">
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <button type="submit">Save Changes</button>
+        <div class="button-group">
+            <button type="submit">Save Changes</button>
+            <!-- Styled cancel link that looks like a button -->
+            <a href="{% url 'PO_Items:PO_Items' %}" class="cancel-button">Cancel</a>
+        </div>
     </form>
-
-    <a href="{% url 'PO_Items:PO_Items' %}">Cancel</a>
 </body>
 </html>
