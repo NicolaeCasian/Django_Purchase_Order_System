@@ -12,7 +12,7 @@ class LoginTest(TestCase):
         self.test_user = User.objects.create_user(username='Buyer', password='Nicolaecasian1')
 
     def test_successful_login(self):
-        """Test that a user can log in with valid credentials."""
+       
         response = self.client.post(reverse('login'), {
             'username': 'Buyer',
             'password': 'Nicolaecasian1',
@@ -20,7 +20,7 @@ class LoginTest(TestCase):
         self.assertEqual(response.status_code, 302) 
 
     def test_login_with_invalid_credentials(self):
-        """Test that login fails with invalid credentials."""
+      
         response = self.client.post(reverse('login'), {
             'username': 'wronguser',
             'password': 'wrongpassword',
@@ -29,10 +29,10 @@ class LoginTest(TestCase):
         self.assertContains(response, "Please enter a correct username and password.")
 
     def test_logout(self):
-        """Test that a logged-in user can log out successfully."""
+       
         self.client.login(username='Buyer', password='Nicolaecasian1')
         response = self.client.post(reverse('logout'))
-        self.assertEqual(response.status_code, 302)  # Redirect after logout
+        self.assertEqual(response.status_code, 302) 
 
 
 class CreateOrderTest(TestCase):
@@ -55,7 +55,7 @@ class CreateOrderTest(TestCase):
         self.url = reverse('PO_Items:create_order')
 
     def test_get_create_order_page(self):
-        """Test that the create order page renders correctly."""
+       
         self.client.login(username='Buyer', password='Nicolaecasian1')
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
@@ -63,13 +63,13 @@ class CreateOrderTest(TestCase):
         self.assertContains(resp, self.item.name)
 
     def test_post_creates_purchase_order_and_items(self):
-        """Test that a purchase order and items are created successfully."""
+        
         self.client.login(username='Buyer', password='Nicolaecasian1')
 
-        # Adjust field names to match your form
+       
         data = {
-            'sports_item': [str(self.item.id)],  # Checkbox for selecting the item
-            'quantity': '3',  # Quantity input field
+            'sports_item': [str(self.item.id)], 
+            'quantity': '3', 
         }
         resp = self.client.post(self.url, data)
         self.assertEqual(resp.status_code, 302)
